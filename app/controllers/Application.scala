@@ -57,7 +57,7 @@ object Application extends Controller {
         Projects.addGroup, Projects.deleteGroup, Projects.renameGroup,
         Projects.addUser, Projects.removeUser, Tasks.addFolder, 
         Tasks.renameFolder, Tasks.deleteFolder, Tasks.index,
-        Tasks.add, Tasks.update, Tasks.delete, Tasks.runTask
+        Tasks.add, Tasks.update, Tasks.delete, Tasks.runTask, Results.index
       )
     ).as("text/javascript") 
   }

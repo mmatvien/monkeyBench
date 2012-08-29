@@ -22,7 +22,9 @@ case class Task(id: ObjectId,
                 hits: String,
                 token: Option[String],
                 header: Option[String],
-                uris: String)
+                uris: String,
+                action: String,
+                body: Option[String])
 
 object Task extends ModelCompanion[Task, ObjectId] {
 
@@ -52,6 +54,12 @@ object Task extends ModelCompanion[Task, ObjectId] {
     dao.find(MongoDBObject("project" -> project)).toList
 
   /**
+   * Find tasks by name and folder
+   */
+  def findByNameAndFolderAndTitle(project: ObjectId, folder: String, title: String): Option[Task] =
+    dao.findOne(MongoDBObject("project" -> project, "folder" -> folder, "title" -> title))
+
+  /**
    * Find tasks related to a folder
    */
   def findByProjectFolder(project: ObjectId, folder: String): Seq[Task] =
@@ -68,6 +76,22 @@ object Task extends ModelCompanion[Task, ObjectId] {
    */
   def deleteInFolder(projectId: ObjectId, folder: String) {
     findByProjectFolder(projectId, folder) map (task => delete(task.id))
+  }
+
+  def updateById(taskId: ObjectId, hits: String, token: Option[String], header: Option[String], uris: String, action: String, body: Option[String]): Task = {
+    dao.update(q = MongoDBObject("_id" -> taskId),
+      o = MongoDBObject(
+        "$set" -> MongoDBObject(
+          "hits" -> hits,
+          "uris" -> uris,
+          "token" -> token,
+          "header" -> header,
+          "action" -> action,
+          "body" -> body)
+      ),
+      upsert = false, multi = false, wc = Task.dao.collection.writeConcern)
+    val updated = findById(taskId).get
+    updated
   }
 
   /**
@@ -112,7 +136,9 @@ object Task extends ModelCompanion[Task, ObjectId] {
       task.hits,
       task.token,
       task.header,
-      task.uris)
+      task.uris,
+      task.action,
+      task.body)
     dao.save(newtask)
     newtask
   }

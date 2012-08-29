@@ -30,6 +30,10 @@ PUT     /tasks/:task                        controllers.Tasks.update(task: Objec
 DELETE  /tasks/:task                        controllers.Tasks.delete(task: ObjectId)
 GET	  	/tasks/:task                        controllers.Tasks.runTask(task: ObjectId)
 
+# Results            
+GET	  	/results/:task                      controllers.Results.index(task: ObjectId, user:String)
+GET	  	/remove/:group                      controllers.Results.delete(group: ObjectId)
+
 POST    /tasks/folder                       controllers.Tasks.addFolder
 DELETE  /projects/:project/tasks/folder     controllers.Tasks.deleteFolder(project: ObjectId, folder: String)
 PUT     /project/:project/tasks/folder      controllers.Tasks.renameFolder(project: ObjectId, folder: String)

@@ -1,8 +1,6 @@
 // -----------------------------------
 // TASKS
 // -----------------------------------
-// author: mda@zenexity.com - 2011
-// -----------------------------------
 
 .tasks {
     .folder {
@@ -124,6 +122,67 @@
                 left: -3000px;
                 visibility: hidden;
             }
+            ul, div {
+                display: inline-block;
+            }
+        }
+        .editTask {
+            position: relative;
+            border-radius: 0 0 4px 4px;
+            padding: 5px 250px 5px 5px;
+            background: white;
+            &:after {
+                content: " ";
+                display: block;
+                clear: both;
+            }
+            input {
+                outline: none;
+            }
+            [name=taskBody] {
+                width: 100%;
+                border: 0;
+            }
+            .dueDate {
+                position: absolute;
+                right: 210px;
+                top: 4px;
+                width: 140px;
+                border-radius: 15px;
+                background: url(/assets/images/icons/clock.png) 2px 2px no-repeat;
+                background-color: @dueDateBackground;
+                border: 1px solid @dueDateBorder;
+                color: @dueDateColor;
+                font-size: 11px;
+                padding: 1px 4px 1px 15px;
+                &::-webkit-input-placeholder {
+                    color: inherit;
+                }
+                &:-moz-placeholder {
+                    color: inherit;
+                }
+            }
+            .assignedTo {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                width: 195px;
+                input {
+                    width: 180px;
+                    margin: 2px;
+                    border: 0;
+                }
+            }
+            .assignToList {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                min-width: 100%;
+                background: rgba(0,0,0,.8);
+                color: #eee;
+            }
+           
             ul, div {
                 display: inline-block;
             }

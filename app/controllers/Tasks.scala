@@ -39,7 +39,9 @@ object Tasks extends Controller with Secured {
       "hits" -> nonEmptyText,
       "token" -> optional(text),
       "header" -> optional(text),
-      "uris" -> nonEmptyText
+      "uris" -> nonEmptyText,
+      "action" -> nonEmptyText,
+      "body" -> optional(text)
     )
   )
 
@@ -50,15 +52,34 @@ object Tasks extends Controller with Secured {
    */
   def add(project: ObjectId, folder: String) = IsMemberOf(project) { _ =>
     implicit request =>
+      Logger.error(taskForm.bindFromRequest.toString)
       taskForm.bindFromRequest.fold(
         errors => BadRequest,
         {
-          case (title, dueDate, assignedTo, hits, token, header, uris) =>
-            val task = Task.create(
-              Task(new ObjectId, folder, project, title, false, dueDate, assignedTo, hits, token, header, uris)
-            )
-            Ok(html.tasks.item(task))
+          case (title, dueDate, assignedTo, hits, token, header, uris, action, body) =>
+            Logger.error("got the form" + project + " : " + folder)
+            val exist = Task.findByNameAndFolderAndTitle(project, folder, title)
+            exist match {
+              case Some(x) => {
+                Logger.error("updating existing task")
+                val updated = Task.updateById(x.id, hits, token match {
+                  case Some("token client") => None
+                  case Some(x)              => Some(x)
+                  case None                 => None
+                }, header, uris, action, body)
+                Ok(html.tasks.item(updated))
+              }
+              case None => {
+                Logger.error("inserting new task")
+                val task = Task.create(
+                  Task(new ObjectId, folder, project, title, false, dueDate, assignedTo, hits, token, header, uris, action, body)
+                )
+                Ok(html.tasks.item(task))
+              }
+            }
+
         }
+
       )
   }
 
@@ -91,7 +112,7 @@ object Tasks extends Controller with Secured {
    * Add a new folder.
    */
   def addFolder = Action {
-    Ok(html.tasks.folder("New folder"))
+    Ok(html.tasks.folder("NewFolder"))
   }
 
   /**
@@ -108,8 +129,8 @@ object Tasks extends Controller with Secured {
       val taskObj = Task.findById(task).get
       val system = ActorSystem("taskSystem")
       val executionActor = system.actorOf(Props[MasterExecutor], name = "taskExecutionActor")
-      executionActor ! Start(taskObj.uris, taskObj.hits.toInt, taskObj.token, taskObj.header)
-      Ok("dd")
+      executionActor ! Start(taskObj.uris, taskObj.hits.toInt, taskObj.token, taskObj.header, task, taskObj.action, taskObj.body)
+      Ok(" done")
     }
   }
 

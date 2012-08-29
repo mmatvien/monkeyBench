@@ -20,7 +20,10 @@
             @views.html.tasks.item( task )
         }
     </ul>
+    <span class="newTask" href = "#" onclick="tog('newTask@folder')">new</span>
     
+    <div id="newTask@folder" style="display:none;">
+   
     <form class="addTask">
         <input type="hidden" name="folder" value="@folder" />
         <input type="text" name="taskBody" placeholder="New task..." />
@@ -28,7 +31,30 @@
         <div class="assignedTo">
             <input type="text" name="assignedTo" placeholder="Assign to..." />
         </div>
-        <input type="submit" />
+        
+       <input  name="hits" placeholder="hits" size="3"/>
+      <select name="token" placeholder="token" >
+          <option value = "token client" >token client</option>
+          @for(tok <- Tokens.list) {
+            <option value = "@tok">@tok</option>
+          }
+      </select>
+      
+      <textarea  name="header" placeholder="header" />
+      
+      <textarea name="uris" rows="10" cols="130" placeholder="uris"></textarea>
+      
+      <select name="action">
+      @for(action <- RESTAction.list) {
+        <option value = "@action">@action</option>
+      }
+      </select>
+      
+      <textarea name="body" placeholder="body" />
+      
+      <input type="submit" onclick="tog('newTask@folder')"/>
+        
     </form>
+    </div>
 </div>
 

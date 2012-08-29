@@ -7,8 +7,37 @@
     }
     
     <h4>@task.title</h4>
-    <span>@task.hits</span>
-  <!--   
+    <span id="hitsDisplay@task.title">@task.hits</span> 
+ <span class="editTask">
+    <form class="editXTask" >
+     <input type="hidden" name="title" value="@task.title" />
+     <input type="hidden" name="dueDate" value="@task.dueDate" />
+      <input type="hidden" name="assignedTo" value="@task.assignedTo" />
+      
+      <input  name="hits" value="@task.hits"  size="3"/>
+      <select name="token">
+      <option value = "token client" >token client</option>
+
+      @for(tok <- Tokens.list) {
+       @if(task.token && tok.contentEquals(task.token.get)){<option value = "@tok" selected>@tok </option>} else {<option value = "@tok" >@tok</option>}    
+      }
+      </select>
+      
+      <textarea  name="header">@task.header.getOrElse()</textarea>
+      
+      <textarea name="uris" rows="10" cols="130">@task.uris</textarea>
+      
+      <select name="action">
+      @for(action <- RESTAction.list) {
+       @if(action.contentEquals(task.action)){<option value = "@action" selected>@action </option>} else {<option value = "@action" >@action</option>}    
+      }
+      </select>
+      <textarea  name="body" >@task.body.getOrElse()</textarea>
+      
+     <input type="submit" value="Submit" />
+    </form>
+</span> 
+<!--   
     @task.dueDate.map { date =>
         <time datetime="@date">@date.format("MMM dd yyyy")</time>
     }
@@ -21,6 +50,7 @@
         <a class="deleteTask" href="@routes.Tasks.delete(task.id)">delete task</a>
         <span class="loader">Loading</span>
         <a class="runTask" href = "@routes.Tasks.delete(task.id)">run task</a>
+        <a class="resultsTask" href = "@routes.Results.index(task.id,"mmatvien@gmail.com")">results</a>
     }
     
 </li>

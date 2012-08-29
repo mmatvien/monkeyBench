@@ -29,8 +29,7 @@ object Project extends ModelCompanion[Project, ObjectId] {
    * Retrieve project for user
    */
   def findInvolving(user: String): Seq[Project] = {
-    log.error("user:" + user)
-    ProjectMember.findByEmail(user) map (projectMameber => dao.findOneById(projectMameber.projectId).get)
+    ProjectMember.findByEmail(user) map (projectMamber => dao.findOneById(projectMamber.projectId).get)
   }
 
   def findByFolder(folder: String): List[Project] =

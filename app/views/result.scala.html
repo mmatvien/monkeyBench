@@ -1,0 +1,121 @@
+@(executions: Seq[Execution] = Nil, projects:Seq[Project] , user:User)
+
+<html>
+    <head>
+        <title>:: MONKEY BENCH ::</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.7.1.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-play-1.7.1.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/underscore-min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/backbone-min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/main.js")"></script>
+        <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
+         <script>
+ function tog(id){
+  
+   $('#' + id).toggle();
+ }
+ </script>
+    </head>
+    <body>
+        <header>
+            <a href="@routes.Projects.index" id="logo"><span>MONKEY</span>BENCH</a>
+            <dl id="user">
+                <dt>@user.name <span>(@user.email)</span></dt>
+                <dd>
+                    <a href="@routes.Application.logout()">logout</a>
+                </dd>
+            </dl>
+        </header>
+        <nav>
+            <h4 class="dashboard"><a href="/#/">projects</a></h4>
+            <ul id="projects">
+                @projects.groupBy(_.folder).map {
+                    case (group, projects) => {
+                        @views.html.projects.group(group, projects)
+                    }
+                }
+            </ul>
+            <button id="newGroup">new group</button>
+        </nav>
+        <section id="res" style="-webkit-user-select: block;">
+      
+        
+        @executions.groupBy(_.time).map {
+        case (time, item) => {
+        
+<div class='row'><div class='span12'></div></div>
+
+
+    <table class="table" >
+      <tr  style="background:#91f767;">
+        <td>@time.format("MM-dd-yy hh:mm:ss")</td>
+        <td><a class="deleteExecution" href = "@routes.Results.delete(item(0).groupId)">delete</a></td>
+      </tr>
+    </table>
+
+ @item.groupBy(_.url).map { 
+    case (url, items) => {
+
+    <table class="table" id="@time">
+         <tbody>
+            <tr onclick="tog('details@url.size@items(0).time.hashCode')"  style="background:#ffe4d0;">
+              <td></td>
+              <td width="70%">@url</td>
+              <td>hits: @items.size</td>
+             <td>
+              fastest:  @items.foldLeft(10000)((i,s) => i min s.timeSpent.toInt) 
+              </td>
+             <td>
+             slowest: @items.foldLeft(0)((i,s) => i max s.timeSpent.toInt) 
+            </td>
+            </tr>
+       
+        <tr>
+        <td colspan = "5">
+              <table id="details@url.size@items(0).time.hashCode" class="resultsTable table table-striped" border="1" style="display:none;" >
+              <thead>
+                  <tr>
+                    <th>url</th>
+                    <th>time spent</th>
+                    <th>status</th>
+                    <th width="200px;">headers</th>
+                  </tr>
+               </thead>
+                
+                <tbody>
+                  @items.map { execution =>
+                  <tr>
+                    <td>@execution.url</td>
+                    <td>@execution.timeSpent</td>
+                    <td>@execution.status</td>
+                    <td width="200px;" onclick="tog('headers@execution.id')">...
+                    <table id="headers@execution.id"  style="display:none;">
+                      <tr>
+                      <td>@execution.headers</td>
+                      </tr>
+                    </table>
+                    
+                    </td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+</td>
+        
+        </tr>
+          </tbody>
+        </table>
+         }
+      }
+         }
+        }
+    
+
+
+ </section>
+
+    </body>
+</html>

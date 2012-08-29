@@ -59,7 +59,7 @@ $.fn.editInPlace = (method, options...) ->
             close: (newName) ->
                 @el.text(newName).show()
                 @input.hide()
-        # jQuery approach: http://docs.jquery.com/Plugins/Authoring
+        # jQuery approach: http:// docs.jquery.com/Plugins/Authoring
         if ( methods[method] )
             return methods[ method ].apply(this, options)
         else if (typeof method == 'object')
@@ -264,6 +264,7 @@ class TaskFolder extends Backbone.View
         "click .deleteAllTasks"         : "deleteAllTasks"
         "click .deleteFolder"           : "deleteFolder"
         "change header>input"           : "toggleAll"
+        "submit .editTask"              : "editTask"
         "submit .addTask"               : "newTask"
     initialize: (options) =>
         @project = options.project
@@ -274,6 +275,7 @@ class TaskFolder extends Backbone.View
             newTask.bind("change", @refreshCount)
             newTask.bind("delete", @deleteTask)
         @counter = @el.find(".counter")
+        @el.find(".editTask").hide()
         @id = @el.attr("data-folder-id")
         @name = $("header > h3", @el).editInPlace
             context: this
@@ -293,13 +295,49 @@ class TaskFolder extends Backbone.View
                 title: $("input[name=taskBody]", form).val()
                 dueDate: $("input[name=dueDate]", form).val()
                 assignedTo: $("input[name=assignedTo]", form).val()
+                hits: $("input[name=hits]", form).val()
+                token: $("select[name=token]", form).val()
+                header: $("textarea[name=header]", form).val()
+                uris: $("textarea[name=uris]", form).val()
+                action: $("select[name=action]", form).val()
+                body: $("textarea[name=body]", form).val()
             success: (tpl) ->
                 newTask = new TaskItem(el: $(tpl), folder: @)
                 @el.find("ul").append(newTask.el)
                 @tasks.push(newTask)
                 form.find("input[type=text]").val("").first().focus()
+                @el.find(".editTask").hide()
             error: (err) ->
                 alert "Something went wrong:" + err
+        false
+    editTask: (e) =>
+        e.preventDefault()
+        $(document).focus() # temporary disable form
+        form = $(e.target)
+        taskBody = $("input[name=taskBody]", form).val()
+        url = form.attr("action")
+        jsRoutes.controllers.Tasks.add(@project, @id).ajax
+            url: url
+            type: "POST"
+            context: this
+            data:
+                title: $("input[name=title]", form).val()
+                dueDate: $("input[name=dueDate]", form).val()
+                assignedTo: $("input[name=assignedTo]", form).val()
+                hits: $("input[name=hits]", form).val()
+                token: $("select[name=token]", form).val()
+                header: $("textarea[name=header]", form).val()
+                uris: $("textarea[name=uris]", form).val()
+                action: $("select[name=action]", form).val()
+                body: $("textarea[name=body]", form).val()
+            success: (tpl) ->
+              # newTask = new TaskItem(el: $(tpl), folder: @)
+               # @el.find("ul").append(newTask.el)
+               # @tasks.push(newTask)
+               @el.find("#hitsDisplay"+$("input[name=title]", form).val()).html($("input[name=hits]", form).val())
+            error: (err) ->
+                alert "Something went wrong:" + err
+        @el.find(".editTask").hide()
         false
     renameFolder: (name) =>
         @loading(true)
@@ -358,7 +396,7 @@ class TaskItem extends Backbone.View
         "change .done"          : "onToggle"
         "click .deleteTask"     : "deleteTask"
         "click .runTask"     	: "runTask"
-        "dblclick h4"           : "editTask"
+        "dblclick h4"           : "editTaskTitle"
     initialize: (options) ->
         @check = @el.find(".done")
         @id = @el.attr("data-task-id")
@@ -387,15 +425,18 @@ class TaskItem extends Backbone.View
                 name: name
             success: (data) ->
                 @loading(false)
-                alert "done running task" + data
             error: (err) ->
                 @loading(false)
                 $.error("Error: " + err)
         false
-    editTask: (e) =>
+    editTaskTitle: (e) =>
         e.preventDefault()
         # TODO
-        alert "not implemented yet."
+        st = @el.find(".editTask").attr("style")
+        if st == "display: none; "
+        	 @el.find(".editTask").show()
+        else
+        	 @el.find(".editTask").hide()
         false
     toggle: (val) =>
         @loading(true)

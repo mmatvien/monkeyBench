@@ -24,7 +24,7 @@
       </select>
       
       <textarea  name="header">@task.header.getOrElse()</textarea>
-      
+      <br>
       <textarea name="uris" rows="10" cols="130">@task.uris</textarea>
       
       <select name="action">
@@ -32,7 +32,7 @@
        @if(action.contentEquals(task.action)){<option value = "@action" selected>@action </option>} else {<option value = "@action" >@action</option>}    
       }
       </select>
-      <textarea  name="body" >@task.body.getOrElse()</textarea>
+    <!--   <textarea  name="body" >@task.body.getOrElse()</textarea> -->
       
      <input type="submit" value="Submit" />
     </form>
@@ -50,7 +50,7 @@
         <a class="deleteTask" href="@routes.Tasks.delete(task.id)">delete task</a>
         <span class="loader">Loading</span>
         <a class="runTask" href = "@routes.Tasks.delete(task.id)">run task</a>
-        <a class="resultsTask" href = "@routes.Results.index(task.id,"mmatvien@gmail.com")">results</a>
+        <a class="resultsTask" href = "@routes.Results.index(task.id,"mmatvien@gmail.com")"> </a>
     }
     
 </li>

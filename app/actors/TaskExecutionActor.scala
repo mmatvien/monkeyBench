@@ -120,9 +120,15 @@ class TaskExecutionActor extends Actor with ActorLogging {
 
     // val headers = constructHeaders(tokenClient, header)
 
+   log.error("action"+action)
+    
     action match {
       case "GET" => {
-        val get = WS.url(url).withHeaders("Authorization" -> tokenClient, "c" -> "c").get()
+         log.error("TOKEN: " + tokenClient)
+        val get = WS.url(url).withHeaders("Authorization" -> tokenClient).get()
+        
+        get.await(100000)
+        
         val executionTime = System.currentTimeMillis - started
         (executionTime, get.value.get.status, get.value.get.getAHCResponse.getHeaders.toString)
       }

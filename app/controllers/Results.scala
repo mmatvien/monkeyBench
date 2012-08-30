@@ -32,6 +32,8 @@ object Results extends Controller with Secured {
    */
   def delete(groupId: ObjectId) = Action { implicit request =>
     Execution.deleteGroup(groupId)
+ Logger.debug( request.toString)
+
     Ok
   }
 }

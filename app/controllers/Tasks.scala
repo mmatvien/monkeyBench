@@ -5,7 +5,6 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import java.util.{ Date }
-import anorm._
 import models._
 import views._
 import org.bson.types.ObjectId
@@ -52,12 +51,10 @@ object Tasks extends Controller with Secured {
    */
   def add(project: ObjectId, folder: String) = IsMemberOf(project) { _ =>
     implicit request =>
-      Logger.error(taskForm.bindFromRequest.toString)
       taskForm.bindFromRequest.fold(
         errors => BadRequest,
         {
           case (title, dueDate, assignedTo, hits, token, header, uris, action, body) =>
-            Logger.error("got the form" + project + " : " + folder)
             val exist = Task.findByNameAndFolderAndTitle(project, folder, title)
             exist match {
               case Some(x) => {
